@@ -1,23 +1,32 @@
-import logo from './logo.svg';
+import { useEffect, useState } from 'react';
 import './App.css';
 
-function App() {
+const useDebounce = (text, delay) => {
+  const [debouncedText, setDebouncedText] = useState('Waiting for input');
+  useEffect(() => {
+    if (!text) return;
+    setDebouncedText("loading...");
+    const timer = setTimeout(() => {
+      setDebouncedText(text);
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [text, delay])
+
+  return debouncedText;
+}
+
+const App = () => {
+  const [text, setText] = useState('');
+
+  const handleInputChange = (e) => setText(e.target.value);
+  const debouncedText = useDebounce(text, 1000);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Debounce Hook</h1>
+      <input type='text' onChange={handleInputChange}/>
+      <p>Debounced value: {debouncedText}</p>
     </div>
   );
 }
